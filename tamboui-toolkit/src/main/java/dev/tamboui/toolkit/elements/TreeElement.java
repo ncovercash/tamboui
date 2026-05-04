@@ -477,16 +477,20 @@ public final class TreeElement<T> extends StyledElement<TreeElement<T>> {
 
     /**
      * Toggles the expanded state of the selected node.
+     *
+     * @return if the toggle was performed (i.e. the node was not a leaf)
      */
-    public void toggleSelected() {
+    public EventResult toggleSelected() {
         if (lastFlatEntries.isEmpty()) {
-            return;
+            return EventResult.UNHANDLED;
         }
         int idx = Math.min(treeState.selected(), lastFlatEntries.size() - 1);
         TreeNode<T> node = lastFlatEntries.get(idx).node();
         if (!node.isLeaf()) {
             node.toggleExpanded();
+            return EventResult.HANDLED;
         }
+        return EventResult.UNHANDLED;
     }
 
     /**
@@ -782,8 +786,7 @@ public final class TreeElement<T> extends StyledElement<TreeElement<T>> {
         }
 
         if (event.matches(Actions.SELECT)) {
-            toggleSelected();
-            return EventResult.HANDLED;
+            return toggleSelected();
         }
 
         if (event.matches(Actions.HOME)) {
